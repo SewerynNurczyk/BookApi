@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { Author } from '@prisma/client';
-import { PrismaService } from 'src/shared/services/prisma.service';
-import { ConflictException } from '@nestjs/common'
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthorsService {
@@ -15,6 +14,18 @@ export class AuthorsService {
         return this.prismaService.author.findUnique({
             where: { id },
         });
+    }
+
+    public async create(authorData: Omit<Author, 'id'>): Promise<Author> {
+        try {
+            return await this.prismaService.author.create({
+                data: authorData,
+            });
+        } catch (error) {
+            if (error.code === 'P2002')
+                throw new ConflictException('Name is already taken');
+            throw error;
+        }
     }
 
     public async updateById(
