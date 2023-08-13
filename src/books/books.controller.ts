@@ -31,7 +31,7 @@ export class BooksController {
     @Post('/')
     @UseGuards(JwtAuthGuard)
     create(@Body() bookData: CreateBookDTO) {
-      return this.booksService.create(bookData);
+        return this.booksService.create(bookData);
     }
 
     @Put('/:id')
